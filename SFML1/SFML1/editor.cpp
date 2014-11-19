@@ -65,6 +65,22 @@ Tile* Editor::getCurrentTile()
 
 Tile* Editor::getLevelTile(int x, int y)
 {
+	if (x >= size_x)
+	{
+		x = size_x - 1;
+	}
+	if (y >= size_y)
+	{
+		y = size_y - 1;
+	}
+	if (x < 0)
+	{
+		x = 0;
+	}
+	if (y < 0)
+	{
+		y = 0;
+	}
 	level[x][y].setWindowPos(x, y, tileSize);
 	return &level[x][y];
 }

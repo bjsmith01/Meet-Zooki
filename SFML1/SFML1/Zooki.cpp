@@ -129,6 +129,124 @@ void Zooki::processMovement(float deltaTime)
 
 }
 
+void Zooki::processMovement(float deltaTime, int rightBound, int leftBound, int upBound, int downBound)
+{
+	if (x_velocity < 0)
+	{
+		pos_x =pos_x - (deltaTime * (-x_velocity));
+	}
+	else
+	{
+		pos_x = pos_x + (deltaTime*x_velocity);
+	}
+
+	if (pos_x < 0)
+	{
+		pos_x = 0;
+		if (isSliding)
+		{
+			pos_x += texture_size_y;
+		}
+		x_velocity = 0;
+
+	}
+	else if (pos_x > 1280 - texture_size_x)
+	{
+		if (!isSliding)
+		{
+			pos_x = 1280 - texture_size_x;
+		}
+		else
+		{
+			pos_x = 1280;
+		}
+		x_velocity = 0;
+	}
+
+	if (y_velocity < 0)
+	{
+		pos_y = pos_y - (deltaTime * (-y_velocity));
+	}
+	else
+	{
+		pos_y = pos_y + (deltaTime*y_velocity);
+	}
+	if (pos_y < 0)
+	{
+		pos_y = 0;
+		y_velocity = 0;
+	}
+	else if (pos_y > 768 - texture_size_y)
+	{
+		pos_y = 100 - texture_size_y; // spawn near top of screen, for testing
+		y_velocity = 0;
+	}
+
+	//right and left collisions
+	if (x_velocity >= 0 && rightBound > 0)
+	{
+		if (pos_x + texture_size_x > rightBound)
+		{
+			if (!isSliding)
+			{
+				pos_x = rightBound - texture_size_x;
+			}
+			else
+			{
+				pos_x = rightBound - 1;
+			}
+			x_velocity = 0;
+		}
+	}
+	else if (x_velocity < 0 && leftBound > 0)
+	{
+		if (pos_x < leftBound)
+		{
+			if (!isSliding)
+			{
+				pos_x = leftBound;
+			}
+			else
+			{
+				pos_x = leftBound + texture_size_y + 1;
+				
+			}
+			x_velocity = 0;
+		}
+	}
+
+	//up and down collisions
+	if (y_velocity < 0 && upBound > 0)
+	{
+		if (pos_y < upBound)
+		{
+			pos_y = upBound;
+			y_velocity = 0;
+		}
+	}
+	else if (y_velocity > 0 && downBound > 0)
+	{
+		if (pos_y + texture_size_y >= downBound)
+		{
+			if (!isSliding)
+			{
+				pos_y = downBound - texture_size_y;
+			}
+			else
+			{
+				pos_y = downBound - 16;
+			}
+			y_velocity = 0;
+			onGround = true;
+		}
+		else
+		{
+			onGround = false;
+		}
+	}
+
+}
+
 void Zooki::jump()
 {
 	if(x_velocity>0)
@@ -143,8 +261,10 @@ void Zooki::slide()
 {
 
 	//zookiSprite.setTexture(zooki_texture);
+	
 	if (x_velocity > 0)
 	{
+		isSliding = true;
 		if (x_velocity > 0 && onGround)
 		{
 			x_velocity = 350;
@@ -154,6 +274,7 @@ void Zooki::slide()
 	}
 	if (x_velocity < 0)
 	{
+		isSliding = true;
 		if (x_velocity < 0 && onGround)
 		{
 			x_velocity = -350;
@@ -162,13 +283,18 @@ void Zooki::slide()
 
 		zookiSprite.setRotation(90);
 	}
-	isSliding = true;
+	pos_x = zookiSprite.getPosition().x;
+	pos_y = zookiSprite.getPosition().y;
+	
 }
 
 
 void Zooki::upright(){
 	zookiSprite.setRotation(0);
-	zookiSprite.setTexture(zooki_texture);
+	//zookiSprite.setTexture(zooki_texture);
+	pos_x = zookiSprite.getPosition().x;
+	pos_y = zookiSprite.getPosition().y;
+
 	if (x_velocity >= 0 && isSliding)
 	{
 		zookiSprite.setTextureRect(zooki_stay_r);
@@ -183,7 +309,15 @@ void Zooki::upright(){
 void Zooki::stop()
 {
 	if (onGround){
-		x_velocity /= 1.1;
+		if (x_velocity > 0)
+		{
+			x_velocity /= 1.1;
+		}
+		else if (x_velocity < 0)
+		{
+			x_velocity = -((-x_velocity)/ 1.1);
+			//x_velocity *= -1;
+		}
 	}
 	
 
