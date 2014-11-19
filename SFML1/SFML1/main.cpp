@@ -38,11 +38,11 @@ int main()
 	const int gravity = 200;
 	const int tileSize = 16;
 	
-	const std::array<string, 3> levels = { "1.txt", "2.txt","3.txt" };
+	const std::array<string, 3> levels = { "1.txt", "2.txt", "3.txt" };
 	//string levels[] = { "1.txt", "2.txt"};
 	const std::array<int, 3> cones = { 0, 2, 8 };
 	//const int cones[] = { 0, 2 };
-	const std::array<int, 3> times = { 10, 15, 40};
+	const std::array<int, 3> times = { 10, 15, 40 };
 	//const int times[] = { 10, 15 };
 	int screenMessage = 1;
 
@@ -191,14 +191,14 @@ int main()
 
 			if (isPlaying)
 			{
-				/*
+				
 				if (levelStart.getElapsedTime().asSeconds() > times[zooki.level]){
 					isPlaying = false;
 					zooki.lives -= 1;
 					zooki.reset();
 					screenMessage = 4;
 				}
-				*/
+				
 				
 				zooki.onGround = false;
 
@@ -214,7 +214,8 @@ int main()
 					{
 						if (!zooki.isSliding)
 						{
-							if (edit.getLevelTile(i, zooki.pos_y / tileSize)->getIsSolid() || edit.getLevelTile(i, (zooki.pos_y / tileSize) + 1)->getIsSolid())
+							if ((edit.getLevelTile(i, zooki.pos_y / tileSize)->getIsSolid() && !edit.getLevelTile(i, zooki.pos_y / tileSize)->getIsDeadly())
+								|| (edit.getLevelTile(i, (zooki.pos_y / tileSize) + 1)->getIsSolid() && !edit.getLevelTile(i, (zooki.pos_y / tileSize) + 1)->getIsDeadly()))
 							{
 								rightCollisionBound = i * tileSize;
 								break;
@@ -222,7 +223,7 @@ int main()
 						}
 						else
 						{
-							if (edit.getLevelTile(i, zooki.pos_y / tileSize)->getIsSolid()) //zooki's x_size is 2 pixels wider than a tile, assume that
+							if (edit.getLevelTile(i, (zooki.pos_y / tileSize) + 1)->getIsSolid() && !edit.getLevelTile(i, (zooki.pos_y / tileSize) + 1)->getIsDeadly()) //zooki's x_size is 2 pixels wider than a tile, assume that
 							{
 								rightCollisionBound = i * tileSize;
 								break;
@@ -238,7 +239,8 @@ int main()
 					{
 						if (!zooki.isSliding)
 						{
-							if (edit.getLevelTile(i, zooki.pos_y / tileSize)->getIsSolid() || edit.getLevelTile(i, (zooki.pos_y / tileSize) + 1)->getIsSolid())
+							if ((edit.getLevelTile(i, zooki.pos_y / tileSize)->getIsSolid() && !edit.getLevelTile(i, zooki.pos_y / tileSize)->getIsDeadly())
+								|| (edit.getLevelTile(i, (zooki.pos_y / tileSize) + 1)->getIsSolid() && ! edit.getLevelTile(i, (zooki.pos_y / tileSize) + 1)->getIsDeadly()))
 							{
 								leftCollisionBound = (i * tileSize) + tileSize;
 								
@@ -247,9 +249,9 @@ int main()
 						}
 						else
 						{
-							if (edit.getLevelTile(i, zooki.pos_y / tileSize)->getIsSolid())
+							if (edit.getLevelTile(i, (zooki.pos_y / tileSize) + 1)->getIsSolid() && !edit.getLevelTile(i, (zooki.pos_y / tileSize) + 1)->getIsDeadly())
 							{
-								leftCollisionBound = (i* tileSize) + tileSize;
+								leftCollisionBound = (i* tileSize) + tileSize *2;
 								
 								break;
 							}
@@ -263,7 +265,7 @@ int main()
 				{
 					for (int i = ((zooki.pos_y / tileSize) + 1); i < edit.getSizeY(); i++)
 					{
-						if (edit.getLevelTile(zooki.pos_x / tileSize, i)->getIsSolid())
+						if (edit.getLevelTile(zooki.pos_x / tileSize, i)->getIsSolid() && !edit.getLevelTile(zooki.pos_x / tileSize, i)->getIsDeadly())
 						{
 							downCollisionBound = i * tileSize;
 							
@@ -277,7 +279,7 @@ int main()
 				{
 					for (int i = ((zooki.pos_y / 16) - 1); i > 0; i--)
 					{
-						if (edit.getLevelTile(zooki.pos_y / tileSize, i)->getIsSolid())
+						if (edit.getLevelTile(zooki.pos_x / tileSize, i)->getIsSolid() && !edit.getLevelTile(zooki.pos_x / tileSize, i)->getIsDeadly())
 						{
 							upCollisionBound = i* tileSize;
 							
@@ -287,7 +289,7 @@ int main()
 				}
 				zooki.processMovement(deltaTime, rightCollisionBound, leftCollisionBound, upCollisionBound, downCollisionBound);
 				zooki.Update();
-				/*
+				
 				for (int i = 0; i < edit.getSizeX(); i++)
 				{
 					for (int j = 0; j < edit.getSizeY(); j++)
@@ -381,8 +383,8 @@ int main()
 						break;
 					}
 				}
-				*/
 				
+				zooki.Update();
 				
 				
 				//window.draw(zooki.zookiSprite);

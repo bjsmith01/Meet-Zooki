@@ -32,6 +32,7 @@ int Zooki::getLivesLeft()
 
 void Zooki::loadTexture()
 {
+	//mirrored for sliding
 	zooki_stay_l = sf::IntRect(7, 42 + texture_size_y, texture_size_x, -texture_size_y);
 
 	zooki_run1_l = sf::IntRect(39, 42, texture_size_x, texture_size_y);
@@ -140,7 +141,7 @@ void Zooki::processMovement(float deltaTime, int rightBound, int leftBound, int 
 		pos_x = pos_x + (deltaTime*x_velocity);
 	}
 
-	if (pos_x < 0)
+	if (pos_x < 0 || (isSliding && pos_x <texture_size_y) )
 	{
 		pos_x = 0;
 		if (isSliding)
@@ -200,7 +201,7 @@ void Zooki::processMovement(float deltaTime, int rightBound, int leftBound, int 
 	}
 	else if (x_velocity < 0 && leftBound > 0)
 	{
-		if (pos_x < leftBound)
+		if (pos_x - texture_size_y < leftBound)
 		{
 			if (!isSliding)
 			{
@@ -208,7 +209,7 @@ void Zooki::processMovement(float deltaTime, int rightBound, int leftBound, int 
 			}
 			else
 			{
-				pos_x = leftBound + texture_size_y + 1;
+				pos_x = leftBound + 1;
 				
 			}
 			x_velocity = 0;
